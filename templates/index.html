@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Database</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script>
+        function openModal() {
+            document.getElementById('studentModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('studentModal').classList.remove('active');
+        }
+
+        function addSubjectRow() {
+            const container = document.getElementById('subjects-container');
+            const div = document.createElement('div');
+            div.className = 'subject-row';
+            div.innerHTML = `
+                <input type="text" name="subject_names[]" class="form-control" placeholder="Subject Name (e.g., Math)" required>
+                <input type="number" name="subject_marks[]" class="form-control" placeholder="Marks" required min="0" max="100">
+            `;
+            container.appendChild(div);
+        }
+    </script>
+</head>
+
+<body>
+    <header>
+        <h1>🎓 Student Database</h1>
+        <div class="user-info">Admin View</div>
+    </header>
+
+    <div class="container">
+        <div class="action-bar">
+            <form action="/" method="GET" class="search-form">
+                <input type="text" name="search" placeholder="Search by Roll No..." class="search-input">
+                <button type="submit" class="btn btn-primary">Search</button>
+                <a href="/" class="btn btn-secondary">Clear</a>
+            </form>
+            <button class="btn btn-primary" onclick="openModal()">
+                + Add Student
+            </button>
+        </div>
+
+        <div class="grid">
+            {% for student in students %}
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <h3 class="student-name">{{ student.name }}</h3>
+                        <div class="student-roll">Roll No: {{ student.roll_number }}</div>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <a href="/edit/{{ student._id }}" class="btn btn-edit">Edit</a>
+                        <a href="/delete/{{ student._id }}" class="btn btn-delete"
+                            onclick="return confirm('Are you sure?')">Delete</a>
+                    </div>
+                </div>
+
+                <ul class="marks-list">
+                    {% for subject in student.subjects %}
+                    <li class="mark-item">
+                        <span class="subject-name">{{ subject.name }}</span>
+                        <span class="grade-badge">{{ subject.mark }}%</span>
+                    </li>
+                    {% else %}
+                    <li class="mark-item" style="color: #999; font-style: italic;">No subjects added.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="studentModal">
+        <div class="modal">
+            <h2>Add New Student</h2>
+            <form action="/add" method="POST">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" name="name" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Roll Number</label>
+                    <input type="text" name="roll_number" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Marks</label>
+                    <div id="subjects-container">
+                        <div class="subject-row">
+                            <input type="text" name="subject_names[]" class="form-control"
+                                placeholder="Subject Name (e.g., Math)" required>
+                            <input type="number" name="subject_marks[]" class="form-control" placeholder="Marks"
+                                required min="0" max="100">
+                        </div>
+                    </div>
+                    <button type="button" class="add-subject-btn" onclick="addSubjectRow()">+ Add Another
+                        Subject</button>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Student</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>
