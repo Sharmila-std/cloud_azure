@@ -2,12 +2,15 @@ from flask import Flask, render_template, request, redirect
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
 # Connection String
-CONNECTION_STRING = "mongodb+srv://sharmila:123456_sharmila@capstone.3xycmpu.mongodb.net/?appName=capstone"
-client = MongoClient(CONNECTION_STRING)
+mongo_uri = os.environ.get("MONGO_URI")
+client = MongoClient(mongo_uri)
 db = client['cloud_azure']
 students_collection = db['students'] # Changed to students collection
 
